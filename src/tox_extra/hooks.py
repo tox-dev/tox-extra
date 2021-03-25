@@ -26,4 +26,4 @@ try:
 
 except ImportError:
     # tox4
-    logging.error("tox-strict disabled itself as it does not support tox4 yet.")
+    logging.error("tox-extra disabled itself as it does not support tox4 yet.")

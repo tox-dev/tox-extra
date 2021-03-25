@@ -76,12 +76,12 @@ jobs:
           python3 -m pip install tox
           python3 -m tox -e py$(printf "${{ matrix.python }}" | tr -d '.')
         env:
-          COVERAGE_FILE: .coverage.${{ matrix.python }}
+          COVERAGE_FILE: .tox/.coverage.${{ matrix.python }}.db
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: coverage-results
-          path: .coverage.${{ matrix.python }}
+          path: .tox/.coverage.*
 
   test-devel:
     needs: lint
@@ -111,6 +111,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: coverage-results
+          path: .tox
       - name: run coverage
         run: |
           python3 -m pip install tox codecov
