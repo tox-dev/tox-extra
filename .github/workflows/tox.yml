@@ -40,7 +40,9 @@ jobs:
           python3 -m tox -e packaging
   test:
     name: ${{ matrix.name }}
-    needs: lint
+    needs:
+      - lint
+      - packaging
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -60,6 +62,10 @@ jobs:
             python-version: 3.8
           - name: py39
             tox_env: py39
+            os: ubuntu-20.04
+            python-version: 3.9
+          - name: py39-devel
+            tox_env: py39-devel
             os: ubuntu-20.04
             python-version: 3.9
           - name: py38@macos
@@ -82,23 +88,6 @@ jobs:
         with:
           name: coverage-results
           path: .tox/.coverage.*
-
-  test-devel:
-    needs: lint
-    runs-on: ubuntu-20.04
-    strategy:
-      fail-fast: false
-      matrix:
-        python: ["3.6"]
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@master
-        with:
-          python-version: ${{ matrix.python }}
-      - name: run test (devel)
-        run: |
-          python3 -m pip install tox
-          python3 -m tox -e py$(printf "${{ matrix.python }}" | tr -d '.')-devel
 
   coverage:
     needs: test
