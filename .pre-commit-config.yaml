@@ -3,8 +3,8 @@ repos:
     rev: 5.8.0
     hooks:
       - id: isort
-  - repo: https://github.com/python/black.git
-    rev: 20.8b1
+  - repo: https://github.com/psf/black
+    rev: 21.4b0
     hooks:
       - id: black
         language_version: python3
@@ -18,12 +18,12 @@ repos:
       - id: check-executables-have-shebangs
       - id: check-merge-conflict
       - id: debug-statements
-  - repo: https://gitlab.com/pycqa/flake8.git
-    rev: 3.9.0
+  - repo: https://github.com/PyCQA/flake8
+    rev: 3.9.1
     hooks:
       - id: flake8
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.26.0
+    rev: v1.26.1
     hooks:
       - id: yamllint
         files: \.(yaml|yml)$
@@ -42,7 +42,7 @@ repos:
           - packaging
           - py>=1.9.0
   - repo: https://github.com/pre-commit/mirrors-pylint
-    rev: v2.7.2
+    rev: v3.0.0a3
     hooks:
       - id: pylint
         additional_dependencies:
