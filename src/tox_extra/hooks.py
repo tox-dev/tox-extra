@@ -19,9 +19,9 @@ try:
                 # Force git to ignore global or user config as we do not want
                 # it to consider upper level ignores that may not exist on
                 # other systems.
-                os.environ["GIT_CONFIG_NOSYSTEM"] = "1"
-                os.environ["XDG_CONFIG_HOME"] = "/"
-                os.environ["HOME"] = "/"
+                # os.environ["GIT_CONFIG_NOSYSTEM"] = "1"
+                # os.environ["XDG_CONFIG_HOME"] = "/"
+                # os.environ["HOME"] = "/"
                 repo = git.Repo(os.getcwd())
                 if repo.is_dirty(untracked_files=True):
                     error(
