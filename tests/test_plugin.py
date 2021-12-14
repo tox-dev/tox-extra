@@ -49,7 +49,8 @@ def test_fail_if_dirty(tmp_path) -> None:
     os.chdir(path)
 
     # add tox.ini and .gitignore files (untracked)
-    open(Path(tmp_path) / "tox.ini", "w").write(TOX_SAMPLE)
+    with open(Path(tmp_path) / "tox.ini", "w") as file:
+        file.write(TOX_SAMPLE)
 
     # check running tox w/o git repo is passing
     with pytest.raises(SystemExit) as exc:
@@ -69,7 +70,8 @@ def test_fail_if_dirty(tmp_path) -> None:
     output = check_output("git status --porcelain", shell=True, universal_newlines=True)
     assert output == ""
 
-    open(Path(tmp_path) / ".gitignore", "w").write(".tox\n")
+    with open(Path(tmp_path) / ".gitignore", "w") as file:
+        file.write(".tox\n")
 
     result = run(
         "git status --porcelain",
