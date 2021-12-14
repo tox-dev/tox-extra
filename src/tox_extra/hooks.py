@@ -29,7 +29,6 @@ try:
                 os.environ.clear()
                 os.environ.update(_environ)
 
-
 except ImportError:
     # tox4
     logging.error("tox-extra disabled itself as it does not support tox4 yet.")
