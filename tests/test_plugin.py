@@ -43,8 +43,12 @@ def test_import_hook() -> None:
 
 @tox3_only
 @preserve_cwd
-def test_fail_if_dirty(tmp_path) -> None:
+def test_fail_if_dirty(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Validated that it fails when drity."""
+    # We need to mock sys.argv because run_module will look at it and fail
+    # as the argv received of pytest would leak into our tox module call.
+    monkeypatch.setattr("sys.argv", ["tox"])
+
     path = Path(tmp_path)
     os.chdir(path)
 
