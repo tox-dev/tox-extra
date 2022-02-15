@@ -1,4 +1,9 @@
 repos:
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    # keep it before markdownlint and eslint
+    rev: "v2.5.1"
+    hooks:
+      - id: prettier
   - repo: https://github.com/PyCQA/isort
     rev: 5.10.1
     hooks:
