@@ -8,6 +8,8 @@ rules:
   brackets:
     max-spaces-inside: 1
     level: error
+  comments:
+    min-spaces-from-content: 1  # prettier compatibility
   truthy:
     check-keys: false
   document-start: disable
