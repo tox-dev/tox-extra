@@ -37,11 +37,12 @@ try:  # tox3 support
             error(MSG_GIT_DIRTY)
 
 except ImportError:  # tox4 support
+    from typing import List
+
     from tox.execute import Outcome
     from tox.plugin import impl
     from tox.tox_env.api import ToxEnv
     from tox.tox_env.errors import Fail
-    from typing import List
 
     @impl
     # pylint: disable=unused-argument
