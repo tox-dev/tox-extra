@@ -41,7 +41,6 @@ def test_import_hook() -> None:
     assert isinstance(tox_runtest_post, types.FunctionType)
 
 
-@tox3_only
 @preserve_cwd
 def test_fail_if_dirty(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Validated that it fails when drity."""
@@ -105,12 +104,8 @@ def test_fail_if_dirty(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
     with pytest.raises(SystemExit) as exc:
         run_module("tox", run_name="__main__", alter_sys=True)
     assert exc.type == SystemExit
-    if tox_version.startswith("3."):
-        assert exc.value.code == 1
-    else:
-        # This plugin is not expected to do anything with tox4 yet, but we
-        # want to be sure it does not break it.
-        assert exc.value.code == 0
+    assert exc.value.code == 1
+
     # add untracked files
     run("git add .", shell=True, check=True)
     run("git commit -m 'Add untracked files'", shell=True, check=True)
