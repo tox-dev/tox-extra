@@ -23,10 +23,7 @@ jobs:
       matrix:
         include:
           - tox_env: lint
-            python-version: 3.6
-          - tox_env: py36
-            python-version: 3.6
-            cover: true
+            python-version: "3.10"
           - tox_env: py37
             python-version: 3.7
             cover: true
