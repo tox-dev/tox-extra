@@ -28,3 +28,6 @@ or untracked files before they commit the code. This plugin also does not take i
 consideration the global `.gitignore`, something that can make git miss reporting
 some untracked files, the goal being to assure that when a new developer clones and
 runs the tests they do not endup with an unexpected git status.
+
+If you have any cases where you expect to have git report dirty, please
+add `--allow-dirty` to the command call to disable this check.
