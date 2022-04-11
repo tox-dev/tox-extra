@@ -1,5 +1,6 @@
 """Tox hook implementations."""
 import os
+from argparse import ArgumentParser
 
 import git
 
@@ -26,17 +27,29 @@ def is_git_dirty(path: str) -> bool:
 
 
 try:  # tox3 support
-    from tox import hookimpl
+    from tox import config, hookimpl
     from tox.reporter import error
+
+    @hookimpl
+    def tox_addoption(parser: config.Parser) -> None:
+        """Add a command line option to the tox parser."""
+        parser.add_argument(
+            "--allow-dirty",
+            action="store_true",
+            default=False,
+            help="If it should allow git to report dirty after executing commands.",
+        )
 
     @hookimpl
     def tox_runtest_post(venv):
         """Hook that runs after test commands."""
-        if is_git_dirty(venv.envconfig.config.toxinidir):
+        allow_dirty = getattr(venv.envconfig.config.option, "allow_dirty", False)
+        if not allow_dirty and is_git_dirty(venv.envconfig.config.toxinidir):
             venv.status = "failed"
             error(MSG_GIT_DIRTY)
 
-except ImportError:  # tox4 support
+except ImportError as exc:  # tox4 support
+    print(exc)
     from typing import List
 
     from tox.execute import Outcome
@@ -45,10 +58,21 @@ except ImportError:  # tox4 support
     from tox.tox_env.errors import Fail
 
     @impl
+    def tox_add_option(parser: ArgumentParser) -> None:
+        """Add a command line option to the tox parser."""
+        parser.add_argument(
+            "--allow-dirty",
+            action="store_true",
+            default=False,
+            help="If it should allow git to report dirty after executing commands.",
+        )
+
+    @impl
     # pylint: disable=unused-argument
     def tox_after_run_commands(
         tox_env: ToxEnv, exit_code: int, outcomes: List[Outcome]
     ) -> None:
         """Hook that runs after test commands."""
-        if is_git_dirty("."):
+        allow_dirty = getattr(tox_env.options, "allow_dirty", False)
+        if not allow_dirty and is_git_dirty("."):
             raise Fail(MSG_GIT_DIRTY)
