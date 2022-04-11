@@ -1,2 +1,7 @@
 [REPORTS]
 output-format = colorized
+
+[MESSAGES CONTROL]
+disable =
+    # until we drop support for tox3
+    duplicate-code,

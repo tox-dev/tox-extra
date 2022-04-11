@@ -35,8 +35,8 @@ def preserve_cwd(function):
 @tox3_only
 def test_import_hook() -> None:
     """One placeholder test."""
-    # pylint: disable=import-outside-toplevel
-    from tox_extra.hooks import tox_runtest_post
+    # pylint: disable=import-outside-toplevel,import-error
+    from tox_extra import tox_runtest_post
 
     assert isinstance(tox_runtest_post, types.FunctionType)
 
@@ -89,14 +89,14 @@ def test_fail_if_dirty(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
 
     # check plugin is installed
     result = run(
-        "python -m tox --version",
+        "python -m tox --help",
         shell=True,
         universal_newlines=True,
         stdout=PIPE,
         check=False,
     )
     assert result.returncode == 0
-    assert "tox-extra" in result.stdout
+    assert "--allow-dirty" in result.stdout
 
     # check tox is failing while dirty
     # We use runpy to call tox in order to assure that coverage happens, as
