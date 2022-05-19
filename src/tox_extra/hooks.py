@@ -1,5 +1,6 @@
 """Tox hook implementations."""
 import os
+import sys
 from argparse import ArgumentParser
 
 import git
@@ -19,7 +20,11 @@ def is_git_dirty(path: str) -> bool:
             repo = git.Repo(os.getcwd())
             if repo.is_dirty(untracked_files=True):
                 os.system("git status")
-                os.system("git diff -U0 --minimal")
+                # We want to display long diff only on non-interactive shells,
+                # like CI/CD pipelines because on local shell, the user can
+                # decide to run it himself if the status line was not enogh.
+                if not os.isatty(sys.stdout.fileno()):
+                    os.system("git --no-pager diff -U0 --minimal")
                 return True
         finally:
             os.environ.clear()
