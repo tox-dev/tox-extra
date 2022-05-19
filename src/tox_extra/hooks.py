@@ -19,6 +19,7 @@ def is_git_dirty(path: str) -> bool:
             repo = git.Repo(os.getcwd())
             if repo.is_dirty(untracked_files=True):
                 os.system("git status")
+                os.system("git diff -U0 --minimal")
                 return True
         finally:
             os.environ.clear()
