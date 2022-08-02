@@ -1,3 +1,6 @@
+default_language_version:
+  # pylint is not yet compatible with py311
+  python: python3.10
 repos:
   - repo: https://github.com/pre-commit/mirrors-prettier
     # keep it before markdownlint and eslint
