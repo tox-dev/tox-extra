@@ -4,7 +4,7 @@ default_language_version:
 repos:
   - repo: https://github.com/pre-commit/mirrors-prettier
     # keep it before markdownlint and eslint
-    rev: "v3.0.0-alpha.1"
+    rev: "v3.0.0-alpha.2"
     hooks:
       - id: prettier
   - repo: https://github.com/PyCQA/isort
