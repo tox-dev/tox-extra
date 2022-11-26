@@ -26,19 +26,14 @@ jobs:
             python-version: "3.10"
           - tox_env: py37
             python-version: 3.7
-            cover: true
           - tox_env: py38,py38-devel
             python-version: 3.8
-            cover: true
           - tox_env: py39
             python-version: 3.9
-            cover: true
           - tox_env: py310
             python-version: "3.10"
-            cover: true
           - tox_env: py311,py311-devel
             python-version: "3.11"
-            cover: true
           - tox_env: packaging
             python-version: "3.10"
 
@@ -51,7 +46,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: pip install "tox>=4.0.0b2"
+        run: pip install "tox>=4.0.0b2" "coverage[toml]>=6.5.0"
 
       - name: Run tox -e ${{ matrix.tox_env }}
         run: tox -e ${{ matrix.tox_env }}
@@ -60,9 +55,7 @@ jobs:
       - name: Upload coverage data
         uses: codecov/codecov-action@v3
         with:
-          directory: .tox/.tox
           name: ${{ matrix.tox_env }}
-          fail_ci_if_error: false # see https://github.com/codecov/codecov-action/issues/598
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true # optional (default = false)
         if: ${{ startsWith(matrix.tox_env, 'py') }}
