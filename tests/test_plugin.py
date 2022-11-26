@@ -1,21 +1,16 @@
 """Hosts tests for the plugin."""
 import functools
 import os
-import types
 from pathlib import Path
 from runpy import run_module
 from subprocess import PIPE, check_output, run
 
 import pytest
-from tox import __version__ as tox_version
 
 TOX_SAMPLE = """
 [tox]
 skipsdist = true
 """
-
-tox3_only = pytest.mark.skipif(not tox_version.startswith("3."), reason="requires tox3")
-tox4_only = pytest.mark.skipif(not tox_version.startswith("4."), reason="requires tox4")
 
 
 def preserve_cwd(function):
@@ -30,15 +25,6 @@ def preserve_cwd(function):
             os.chdir(cwd)
 
     return decorator
-
-
-@tox3_only
-def test_import_hook() -> None:
-    """One placeholder test."""
-    # pylint: disable=import-outside-toplevel
-    from tox_extra.hooks import tox_runtest_post
-
-    assert isinstance(tox_runtest_post, types.FunctionType)
 
 
 @preserve_cwd

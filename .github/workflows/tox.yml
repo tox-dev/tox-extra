@@ -51,20 +51,19 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: |
-          python -m pip install -U pip 'coverage[toml]'
-          pip install tox
+        run: pip install "tox>=4.0.0b2"
 
       - name: Run tox -e ${{ matrix.tox_env }}
         run: tox -e ${{ matrix.tox_env }}
         continue-on-error: ${{ matrix.experimental || false }}
 
       - name: Upload coverage data
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
-          directory: .tox
-          files: "coverage-*.xml"
+          directory: .tox/.tox
           name: ${{ matrix.tox_env }}
+          fail_ci_if_error: false # see https://github.com/codecov/codecov-action/issues/598
+          token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true # optional (default = false)
         if: ${{ startsWith(matrix.tox_env, 'py') }}
 
