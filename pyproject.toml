@@ -36,7 +36,7 @@ classifiers = [
 keywords = ["git", "tox", "tox-plugin"]
 dependencies = [
   "gitpython",
-  "tox>=3.18",  # allowlist_externals
+  "tox>=4.0.0b2",
   "packaging",
 ]
 
@@ -48,7 +48,10 @@ changelog = "https://github.com/tox-dev/tox-extra/releases"
 
 [project.optional-dependencies]
 test = [
+    "coverage[toml]>=6.5.0",
+    "pytest-mock>=3.10.0",
     "pytest>=7.2.0",
+    "testfixtures>=7.0.3",
 ]
 
 [project.entry-points.tox]
@@ -59,9 +62,9 @@ parallel = true
 
 [tool.coverage.report]
 omit = [".tox/*/lib/python*/site-packages/*"]
-include = "src/*"
-# fail under this percent
-fail_under = 92.0
+include = ["src/*"]
+fail_under = 100.0
+skip_covered = true
 
 [tool.coverage.paths]
 source = ["src"]

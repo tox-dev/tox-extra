@@ -58,4 +58,4 @@ repos:
           - packaging
           - pytest
           - pyyaml
-          - tox
+          - tox>=4.0.0b2
