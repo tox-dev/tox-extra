@@ -37,8 +37,8 @@ classifiers = [
 keywords = ["git", "tox", "tox-plugin"]
 dependencies = [
   "gitpython",
-  "tox>=4.0.0b2",
   "packaging",
+  "tox",
 ]
 
 [project.urls]
