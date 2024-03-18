@@ -1,4 +1,5 @@
 """Hosts tests for the plugin."""
+
 import functools
 import os
 from pathlib import Path
