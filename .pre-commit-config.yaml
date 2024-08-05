@@ -4,20 +4,20 @@ default_language_version:
 repos:
   - repo: https://github.com/pre-commit/mirrors-prettier
     # keep it before markdownlint and eslint
-    rev: "v3.0.3"
+    rev: "v4.0.0-alpha.8"
     hooks:
       - id: prettier
   - repo: https://github.com/PyCQA/isort
-    rev: 5.12.0
+    rev: 5.13.2
     hooks:
       - id: isort
   - repo: https://github.com/psf/black
-    rev: 23.9.1
+    rev: 24.8.0
     hooks:
       - id: black
         language_version: python3
   - repo: https://github.com/pre-commit/pre-commit-hooks.git
-    rev: v4.4.0
+    rev: v4.6.0
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
@@ -27,18 +27,18 @@ repos:
       - id: check-merge-conflict
       - id: debug-statements
   - repo: https://github.com/PyCQA/flake8
-    rev: 6.1.0
+    rev: 7.1.1
     hooks:
       - id: flake8
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.32.0
+    rev: v1.35.1
     hooks:
       - id: yamllint
         files: \.(yaml|yml)$
         types: [file, yaml]
         entry: yamllint --strict
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.5.1
+    rev: v1.11.1
     hooks:
       - id: mypy
         # empty args needed in order to match mypy cli behavior
