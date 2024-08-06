@@ -1,4 +1,5 @@
 """Tox hook implementations."""
+
 import os
 import sys
 from argparse import ArgumentParser
