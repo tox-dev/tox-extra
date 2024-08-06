@@ -1,6 +1,5 @@
 """Hosts tests for the plugin."""
 
-import functools
 import os
 from pathlib import Path
 from runpy import run_module
@@ -8,24 +7,12 @@ from subprocess import PIPE, check_output, run
 
 import pytest
 
+from . import preserve_cwd
+
 TOX_SAMPLE = """
 [tox]
 skipsdist = true
 """
-
-
-def preserve_cwd(function):
-    """Decorator for restoring cwd."""
-
-    @functools.wraps(function)
-    def decorator(*args, **kwargs):
-        cwd = os.getcwd()
-        try:
-            return function(*args, **kwargs)
-        finally:
-            os.chdir(cwd)
-
-    return decorator
 
 
 @preserve_cwd

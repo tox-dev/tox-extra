@@ -36,6 +36,7 @@ classifiers = [
 ]
 keywords = ["git", "tox", "tox-plugin"]
 dependencies = [
+  "bindep>2.8.1",
   "gitpython",
   "packaging",
   "tox",
@@ -66,6 +67,7 @@ omit = [".tox/*/lib/python*/site-packages/*"]
 include = ["src/*"]
 fail_under = 100.0
 skip_covered = true
+show_missing = true
 
 [tool.coverage.paths]
 source = ["src"]
