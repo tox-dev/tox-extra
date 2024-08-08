@@ -5,6 +5,8 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["main"]
+  release:
+    types: [published]
   # Run the tox tests every 8 hours.
   # This will help to identify faster if
   # there is a CI failure related to a
@@ -38,7 +40,7 @@ jobs:
           default_python: "3.10"
           other_names: |
             lint
-            packaging
+            pkg
             py38,py38-devel
             py39,py39-devel
             py310,py310-devel
@@ -183,3 +185,39 @@ jobs:
         uses: actions/upload-artifact/merge@v4
         with:
           delete-merged: true
+  pypi:
+    name: Publish to PyPI registry
+    needs: check
+    if: github.event_name == 'release' && github.event.action == 'published'
+    environment: release # approval
+    runs-on: ubuntu-24.04
+    permissions:
+      id-token: write
+
+    env:
+      FORCE_COLOR: 1
+      PY_COLORS: 1
+      TOXENV: pkg
+
+    steps:
+      - name: Switch to using Python 3.10 by default
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install tox
+        run: python3 -m pip install --user "tox>=4.0.0"
+
+      - name: Check out src from Git
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # needed by setuptools-scm
+          submodules: true
+
+      - name: Build dists
+        run: python3 -m tox
+
+      - name: Publish to pypi.org
+        if: >- # "create" workflows run separately from "push" & "pull_request"
+          github.event_name == 'release'
+        uses: pypa/gh-action-pypi-publish@release/v1
