@@ -3,13 +3,15 @@
 import os
 import sys
 from argparse import ArgumentParser
-from typing import List
+from typing import Any, List
 
 import git
 from tox.execute import Outcome
 from tox.plugin import impl
 from tox.tox_env.api import ToxEnv
 from tox.tox_env.errors import Fail
+
+from tox_extra.bindep import check_bindep
 
 MSG_GIT_DIRTY = (
     "Git reported dirty status. "
@@ -47,6 +49,13 @@ def tox_add_option(parser: ArgumentParser) -> None:
         default=False,
         help="If it should allow git to report dirty after executing commands.",
     )
+
+
+@impl
+# pylint: disable=unused-argument
+def tox_on_install(tox_env: ToxEnv, arguments: Any, section: str, of_type: str) -> None:
+    """Runs just before installing package."""
+    check_bindep()
 
 
 @impl
