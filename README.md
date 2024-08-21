@@ -40,6 +40,16 @@ add `--allow-dirty` to the command call to disable this check.
 
 ## Checks system dependencies using bindep
 
-If a `bindep.txt` config file is found, tox will run `bindep test` to
+If a `bindep.txt` config file is found, tox will run `bindep [profiles]` to
 check if dependencies, including test ones, are present. There is no need to
 install bindep your self.
+
+This plugin will add the following list of bindep profiles:
+
+- `test` is always added as tox itself is a test tool
+- exact tox env name
+- tox env name itself split by `-'
+- `pythonX.Y` and `pyXY` based on which python current tox env will use
+
+This should allow developers to modify their `bindep.txt` file to include
+system dependencies specific to a single tox environment if they wish.

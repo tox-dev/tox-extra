@@ -5,14 +5,25 @@ from __future__ import print_function
 import os
 import subprocess
 import sys
+from functools import lru_cache
+from pathlib import Path
+from typing import Iterable, Optional
+
+if sys.version_info >= (3, 9):  # pragma: no cover
+    from functools import cache
+else:  # pragma: no cover
+    cache = lru_cache(maxsize=None)
 
 
-def check_bindep() -> None:
+@cache
+def check_bindep(path: Path, profiles: Optional[Iterable[str]] = None) -> None:
     """Check bindeps requirements or exit."""
-    if os.path.isfile("bindep.txt"):
+    if profiles is None:  # pragma: no cover
+        profiles = []
+    if os.path.isfile(path / "bindep.txt"):
         # as 'bindep --profiles' does not show user defined profiles like 'test'
         # it makes no sense to list them.
-        cmd = [sys.executable, "-m", "bindep", "-b", "test"]
+        cmd = [sys.executable, "-m", "bindep", "-b", *sorted(profiles)]
         # # determine profiles
         # result = subprocess.run(
         #     [sys.executable, "-m", "bindep", "--profiles"],
@@ -37,6 +48,7 @@ def check_bindep() -> None:
             universal_newlines=True,
             stderr=subprocess.PIPE,
             stdout=subprocess.PIPE,
+            cwd=path,
         )
         if result.returncode:
             print(
@@ -47,4 +59,4 @@ def check_bindep() -> None:
                 print(result.stdout)
             if result.stderr:
                 print(result.stderr, file=sys.stderr)
-            sys.exit(result.returncode)
+            raise SystemExit(result.returncode)
