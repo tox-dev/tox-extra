@@ -33,7 +33,7 @@ jobs:
     steps:
       - name: Determine matrix
         id: generate_matrix
-        uses: coactions/dynamic-matrix@v2
+        uses: coactions/dynamic-matrix@v3
         with:
           min_python: "3.8"
           max_python: "3.13"
@@ -41,12 +41,13 @@ jobs:
           other_names: |
             lint
             pkg
-            py38,py38-devel
-            py39,py39-devel
-            py310,py310-devel
-            py311,py311-devel
-            py312,py312-devel
-            py313,py313-devel
+            py38:tox -e py38
+            py39:tox -e py39
+            py310:tox -e py310; tox -e py310-devel
+            py311:tox -e py311; tox -e py311-devel
+            py312:tox -e py312; tox -e py312-devel
+            py313:tox -e py313-devel
+            py312-macos:tox -e py312; tox -e py312-devel
           platforms: linux,macos
           skip_explode: "1"
 
@@ -93,13 +94,20 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip wheel tox
 
-      - name: Initialize tox envs ${{ matrix.passed_name }}
-        run: python3 -m tox -n --skip-missing-interpreters false -vv -e ${{ matrix.passed_name }}
-        timeout-minutes: 5 # average is under 1, but macos can be over 3
-
       # sequential run improves browsing experience (almost no speed impact)
-      - name: tox -e ${{ matrix.passed_name }}
-        run: python3 -m tox -e ${{ matrix.passed_name }}
+      - run: ${{ matrix.command }}
+
+      - run: ${{ matrix.command2 }}
+        if: ${{ matrix.command2 }}
+
+      - run: ${{ matrix.command3 }}
+        if: ${{ matrix.command3 }}
+
+      - run: ${{ matrix.command4 }}
+        if: ${{ matrix.command4 }}
+
+      - run: ${{ matrix.command5 }}
+        if: ${{ matrix.command5 }}
 
       - name: Archive logs
         uses: actions/upload-artifact@v4
