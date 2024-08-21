@@ -17,9 +17,9 @@ from tox.tox_env.errors import Fail
 from tox_extra.bindep import check_bindep
 
 MSG_GIT_DIRTY = (
-    "Git reported dirty status. "
-    "Git should never report dirty status at the end of "
-    "testing, regardless if status is passed, failed or aborted."
+    "exit code 1 due to 'git status -s' reporting dirty. "
+    "That should not happen regardless if status is passed, failed or aborted. "
+    "Modify .gitignore file to avoid this."
 )
 
 
@@ -30,7 +30,7 @@ def is_git_dirty(path: str) -> bool:
         try:
             repo = git.Repo(os.getcwd())
             if repo.is_dirty(untracked_files=True):
-                os.system("git status")
+                os.system("git status -s")
                 # We want to display long diff only on non-interactive shells,
                 # like CI/CD pipelines because on local shell, the user can
                 # decide to run it himself if the status line was not enogh.
