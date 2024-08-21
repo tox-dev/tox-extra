@@ -1,6 +1,9 @@
 """Tox hook implementations."""
 
+from __future__ import annotations
+
 import os
+import pathlib
 import sys
 from argparse import ArgumentParser
 from typing import Any, List
@@ -55,7 +58,16 @@ def tox_add_option(parser: ArgumentParser) -> None:
 # pylint: disable=unused-argument
 def tox_on_install(tox_env: ToxEnv, arguments: Any, section: str, of_type: str) -> None:
     """Runs just before installing package."""
-    check_bindep()
+    profiles = frozenset(
+        [
+            "test",
+            f"python{tox_env.py_dot_ver()}",  # python3.12 like profile
+            f"py{tox_env.py_dot_ver().replace('.', '')}",  # py312 like profile
+            tox_env.name,  # exact tox env name, useful for stuff like 'docs' or 'lint'
+            *tox_env.name.split("-"),
+        ]
+    )
+    check_bindep(path=pathlib.Path.cwd(), profiles=profiles)
 
 
 @impl
