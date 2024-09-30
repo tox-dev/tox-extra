@@ -114,6 +114,7 @@ jobs:
         with:
           name: logs-${{ matrix.name }}.zip
           if-no-files-found: error
+          include-hidden-files: true
           path: |
             .tox/**/log/
             .tox/**/.coverage*
@@ -155,6 +156,7 @@ jobs:
         with:
           name: logs.zip
           pattern: logs-*.zip
+          include-hidden-files: true
           # artifacts like py312.zip and py312-macos do have overlapping files
           separate-directories: true
 
