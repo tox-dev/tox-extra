@@ -67,7 +67,8 @@ def tox_on_install(tox_env: ToxEnv, arguments: Any, section: str, of_type: str) 
             *tox_env.name.split("-"),
         ]
     )
-    check_bindep(path=pathlib.Path.cwd(), profiles=profiles)
+    if os.environ.get("TOX_EXTRA_BINDEP", "1") != "0":
+        check_bindep(path=pathlib.Path.cwd(), profiles=profiles)
 
 
 @impl

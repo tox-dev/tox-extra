@@ -53,3 +53,6 @@ This plugin will add the following list of bindep profiles:
 
 This should allow developers to modify their `bindep.txt` file to include
 system dependencies specific to a single tox environment if they wish.
+
+To disable bindep feature, you can define `TOX_EXTRA_BINDEP=0` in your
+environment.
