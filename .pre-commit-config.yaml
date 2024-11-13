@@ -2,6 +2,10 @@ default_language_version:
   # pylint is not yet compatible with py311
   python: python3.10
 repos:
+  - repo: https://github.com/pappasam/toml-sort
+    rev: v0.23.1
+    hooks:
+      - id: toml-sort-fix
   - repo: https://github.com/pre-commit/mirrors-prettier
     # keep it before markdownlint and eslint
     rev: "v4.0.0-alpha.8"
