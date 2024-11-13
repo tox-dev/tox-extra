@@ -1,7 +1,7 @@
 [build-system]
 requires = [
   "setuptools >= 61.0",
-  "setuptools_scm[toml] >= 7.0.0",
+  "setuptools_scm[toml] >= 7.0.0"
 ]
 build-backend = "setuptools.build_meta"
 
@@ -9,37 +9,47 @@ build-backend = "setuptools.build_meta"
 # https://peps.python.org/pep-0621/#readme
 requires-python = ">=3.8"
 dynamic = ["version"]
-
 name = "tox-extra"
 description = "Performs extra checks before or after running"
 readme = "README.md"
 authors = [
-    {"name"="Sorin Sbarnea", "email"="sorin.sbarnea@gmail.com"}
+  {"name" = "Sorin Sbarnea", "email" = "sorin.sbarnea@gmail.com"}
 ]
 maintainers = [
-    {"name"="Sorin Sbarnea", "email"="sorin.sbarnea@gmail.com"}
+  {"name" = "Sorin Sbarnea", "email" = "sorin.sbarnea@gmail.com"}
 ]
 license = {text = "MIT"}
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Intended Audience :: Developers",
-    "Framework :: tox",
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Topic :: Software Development :: Testing",
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "Framework :: tox",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Testing"
 ]
 keywords = ["git", "tox", "tox-plugin"]
 dependencies = [
   "bindep>2.8.1",
   "gitpython",
   "packaging",
-  "tox",
+  "tox"
+]
+
+[project.entry-points.tox]
+extra = "tox_extra.hooks"
+
+[project.optional-dependencies]
+test = [
+  "coverage[toml]>=6.5.0",
+  "pytest-mock>=3.10.0",
+  "pytest>=7.2.0",
+  "testfixtures>=7.0.3"
 ]
 
 [project.urls]
@@ -48,19 +58,8 @@ issues = "https://github.com/tox-dev/tox-extra/issues"
 repository = "https://github.com/tox-dev/tox-extra"
 changelog = "https://github.com/tox-dev/tox-extra/releases"
 
-[project.optional-dependencies]
-test = [
-    "coverage[toml]>=6.5.0",
-    "pytest-mock>=3.10.0",
-    "pytest>=7.2.0",
-    "testfixtures>=7.0.3",
-]
-
-[project.entry-points.tox]
-extra = "tox_extra.hooks"
-
-[tool.coverage.run]
-parallel = true
+[tool.coverage.paths]
+source = ["src"]
 
 [tool.coverage.report]
 omit = [".tox/*/lib/python*/site-packages/*"]
@@ -69,8 +68,8 @@ fail_under = 100.0
 skip_covered = true
 show_missing = true
 
-[tool.coverage.paths]
-source = ["src"]
+[tool.coverage.run]
+parallel = true
 
 [tool.isort]
 profile = "black"
