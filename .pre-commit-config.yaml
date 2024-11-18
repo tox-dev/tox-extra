@@ -53,6 +53,7 @@ repos:
           - gitpython
           - packaging
           - py>=1.9.0
+          - tox>=4.23.2
   - repo: https://github.com/pre-commit/mirrors-pylint
     rev: v3.0.0a5
     hooks:

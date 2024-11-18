@@ -13,6 +13,7 @@ from tox.execute import Outcome
 from tox.plugin import impl
 from tox.tox_env.api import ToxEnv
 from tox.tox_env.errors import Fail
+from tox.tox_env.python.api import Python
 
 from tox_extra.bindep import check_bindep
 
@@ -58,17 +59,19 @@ def tox_add_option(parser: ArgumentParser) -> None:
 # pylint: disable=unused-argument
 def tox_on_install(tox_env: ToxEnv, arguments: Any, section: str, of_type: str) -> None:
     """Runs just before installing package."""
-    profiles = frozenset(
-        [
+    if os.environ.get("TOX_EXTRA_BINDEP", "1") != "0":
+        profiles = {
             "test",
-            f"python{tox_env.py_dot_ver()}",  # python3.12 like profile
-            f"py{tox_env.py_dot_ver().replace('.', '')}",  # py312 like profile
             tox_env.name,  # exact tox env name, useful for stuff like 'docs' or 'lint'
             *tox_env.name.split("-"),
-        ]
-    )
-    if os.environ.get("TOX_EXTRA_BINDEP", "1") != "0":
-        check_bindep(path=pathlib.Path.cwd(), profiles=profiles)
+        }
+        if isinstance(tox_env, Python):
+            profiles.add(f"python{tox_env.py_dot_ver()}")  # python3.12 like profile
+            profiles.add(
+                f"py{tox_env.py_dot_ver().replace('.', '')}"
+            )  # py312 like profile # type: ignore
+
+        check_bindep(path=pathlib.Path.cwd(), profiles=frozenset(profiles))
 
 
 @impl
