@@ -35,19 +35,18 @@ jobs:
         id: generate_matrix
         uses: coactions/dynamic-matrix@v4
         with:
-          min_python: "3.8"
+          min_python: "3.9"
           max_python: "3.13"
           default_python: "3.10"
           other_names: |
             lint
             pkg
-            py38:tox -e py38
             py39:tox -e py39
             py310:tox -e py310; tox -e py310-devel
             py311:tox -e py311; tox -e py311-devel
             py312:tox -e py312; tox -e py312-devel
-            py313:tox -e py313-devel
-            py312-macos:tox -e py312; tox -e py312-devel
+            py313:tox -e py312; tox -e py313-devel
+            py313-macos:tox -e py313; tox -e py313-devel
           platforms: linux,macos
           skip_explode: "1"
 

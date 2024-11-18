@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 # https://peps.python.org/pep-0621/#readme
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dynamic = ["version"]
 name = "tox-extra"
 description = "Performs extra checks before or after running"
@@ -26,11 +26,11 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: Software Development :: Testing"
 ]
 keywords = ["git", "tox", "tox-plugin"]
@@ -73,6 +73,17 @@ parallel = true
 
 [tool.isort]
 profile = "black"
+
+[tool.mypy]
+python_version = 3.9
+color_output = true
+error_summary = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_any_generics = true
+
+[tool.pytest.ini_options]
+addopts = "-ra --showlocals"
 
 [tool.setuptools_scm]
 local_scheme = "no-local-version"
