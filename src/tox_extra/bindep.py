@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import subprocess
 import sys
@@ -11,6 +12,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Iterable
     from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 
 @cache
@@ -32,12 +35,13 @@ def check_bindep(path: Path, profiles: Iterable[str] | None = None) -> None:
             cwd=path,
         )
         if result.returncode:
-            print(
+            msg = (
                 f"Running '{' '.join(cmd)}' returned {result.returncode}, "
-                "likely missing system dependencies.",
+                "likely missing system dependencies."
             )
             if result.stdout:
-                print(result.stdout)
+                msg += "\nstdout:\n" + result.stdout
             if result.stderr:
-                print(result.stderr, file=sys.stderr)
+                msg += "\nstderr:\n" + result.stderr
+            logger.error(msg)
             raise SystemExit(result.returncode)
