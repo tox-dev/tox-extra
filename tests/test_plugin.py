@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 from runpy import run_module
 from subprocess import PIPE, check_output, run
+from unittest.mock import patch
 
 import pytest
 
@@ -75,7 +76,7 @@ def test_fail_if_dirty(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     # check tox is failing while dirty
     # We use runpy to call tox in order to assure that coverage happens, as
     # running a subprocess would prevent it from working.
-    with pytest.raises(SystemExit) as exc:
+    with patch.dict("os.environ", {"CI": "true"}), pytest.raises(SystemExit) as exc:
         run_module("tox", run_name="__main__", alter_sys=True)
     assert exc.type is SystemExit
     assert exc.value.code == 1
@@ -85,7 +86,7 @@ def test_fail_if_dirty(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     run("git commit -m 'Add untracked files'", shell=True, check=True)
 
     # check that tox is now passing
-    with pytest.raises(SystemExit) as exc:
+    with patch.dict("os.environ", {"CI": "true"}), pytest.raises(SystemExit) as exc:
         run_module("tox", run_name="__main__", alter_sys=True)
     assert exc.type is SystemExit
     assert exc.value.code == 0
