@@ -27,7 +27,8 @@ dependencies = [
   "bindep>2.8.1",
   "gitpython",
   "packaging",
-  "tox"
+  "tox",
+  "tox-uv>=1.16.0"
 ]
 description = "Performs extra checks before or after running"
 dynamic = ["version"]
@@ -83,7 +84,7 @@ disallow_any_generics = true
 disallow_untyped_calls = true
 disallow_untyped_defs = true
 error_summary = true
-python_version = 3.9
+python_version = "3.9"
 
 [tool.pytest.ini_options]
 # do not add options here as this will likely break either console runs or IDE
