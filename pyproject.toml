@@ -166,10 +166,6 @@ requires = ["tox-uv >= 1.16.0"]
 deps = ["tox @ git+https://github.com/tox-dev/tox.git@main"]
 description = "Run tests using devel branch of tox (unreleased)"
 
-[tool.tox.env."py{39,310,311,312,313}-devel"]
-deps = ["tox @ git+https://github.com/tox-dev/tox.git@main"]
-description = "Run tests using devel branch of tox (unreleased)"
-
 [tool.tox.env.lint]
 commands = [
   [
@@ -191,7 +187,7 @@ commands = [
   # metadata validation
   ["sh", "-c", "python3 -m twine check --strict {toxinidir}/dist/*"],
   # Install the wheel
-  ["sh", "-c", "python3 -m pip install {toxinidir}/dist/*.whl"],
+  ["sh", "-c", "python3 -m pip install {toxinidir}/dist/*.whl"]
 ]
 deps = [
   "build >= 0.9.0",
@@ -203,6 +199,10 @@ description = "Test packaging"
 skip_install = true
 # `usedevelop = true` overrides `skip_install` instruction, it's unwanted
 usedevelop = false
+
+[tool.tox.env."py{39,310,311,312,313}-devel"]
+deps = ["tox @ git+https://github.com/tox-dev/tox.git@main"]
+description = "Run tests using devel branch of tox (unreleased)"
 
 [tool.tox.env_run_base]
 allowlist_externals = [
