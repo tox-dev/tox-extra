@@ -16,7 +16,7 @@ skipsdist = true
 
 
 @preserve_cwd
-def test_fail_if_dirty(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_fail_if_dirty(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Validated that it fails when drity."""
     # We need to mock sys.argv because run_module will look at it and fail
     # as the argv received of pytest would leak into our tox module call.
@@ -26,7 +26,7 @@ def test_fail_if_dirty(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
     os.chdir(path)
 
     # add tox.ini and .gitignore files (untracked)
-    with open(Path(tmp_path) / "tox.ini", "w", encoding="utf-8") as file:
+    with (Path(tmp_path) / "tox.ini").open("w", encoding="utf-8") as file:
         file.write(TOX_SAMPLE)
 
     # check running tox w/o git repo is passing
@@ -47,7 +47,7 @@ def test_fail_if_dirty(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
     output = check_output("git status --porcelain", shell=True, universal_newlines=True)
     assert output == ""
 
-    with open(Path(tmp_path) / ".gitignore", "w", encoding="utf-8") as file:
+    with (Path(tmp_path) / ".gitignore").open("w", encoding="utf-8") as file:
         file.write(".tox\n")
 
     result = run(
