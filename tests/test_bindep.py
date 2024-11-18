@@ -24,5 +24,5 @@ def test_bindep(folder: str, expected_rc: int) -> None:
     with patch("sys.argv", ["tox"]):
         with pytest.raises(SystemExit) as exc:
             run_module("tox", run_name="__main__")
-    assert exc.type == SystemExit
+    assert exc.type is SystemExit
     assert exc.value.code == expected_rc

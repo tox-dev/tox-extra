@@ -32,7 +32,7 @@ def test_fail_if_dirty(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
     # check running tox w/o git repo is passing
     with pytest.raises(SystemExit) as exc:
         run_module("tox", run_name="__main__")  # , alter_sys=True)
-    assert exc.type == SystemExit
+    assert exc.type is SystemExit
     assert exc.value.code == 0
 
     # create temp git repository
@@ -53,7 +53,7 @@ def test_fail_if_dirty(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
     result = run(
         "git status --porcelain",
         shell=True,
-        universal_newlines=True,
+        text=True,
         cwd=tmp_path,
         stdout=PIPE,
         check=False,
@@ -65,7 +65,7 @@ def test_fail_if_dirty(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
     result = run(
         "python -m tox --version",
         shell=True,
-        universal_newlines=True,
+        text=True,
         stdout=PIPE,
         check=False,
     )
@@ -77,7 +77,7 @@ def test_fail_if_dirty(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
     # running a subprocess would prevent it from working.
     with pytest.raises(SystemExit) as exc:
         run_module("tox", run_name="__main__", alter_sys=True)
-    assert exc.type == SystemExit
+    assert exc.type is SystemExit
     assert exc.value.code == 1
 
     # add untracked files
@@ -87,5 +87,5 @@ def test_fail_if_dirty(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
     # check that tox is now passing
     with pytest.raises(SystemExit) as exc:
         run_module("tox", run_name="__main__", alter_sys=True)
-    assert exc.type == SystemExit
+    assert exc.type is SystemExit
     assert exc.value.code == 0

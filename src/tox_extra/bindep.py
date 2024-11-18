@@ -1,22 +1,20 @@
 """Bindep check feature implementations."""
 
-from __future__ import print_function
+from __future__ import annotations
 
 import os
 import subprocess
 import sys
-from functools import lru_cache
-from pathlib import Path
-from typing import Iterable, Optional
+from functools import cache
+from typing import TYPE_CHECKING
 
-if sys.version_info >= (3, 9):  # pragma: no cover
-    from functools import cache
-else:  # pragma: no cover
-    cache = lru_cache(maxsize=None)
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+    from pathlib import Path
 
 
 @cache
-def check_bindep(path: Path, profiles: Optional[Iterable[str]] = None) -> None:
+def check_bindep(path: Path, profiles: Iterable[str] | None = None) -> None:
     """Check bindeps requirements or exit."""
     if profiles is None:  # pragma: no cover
         profiles = []
@@ -24,28 +22,11 @@ def check_bindep(path: Path, profiles: Optional[Iterable[str]] = None) -> None:
         # as 'bindep --profiles' does not show user defined profiles like 'test'
         # it makes no sense to list them.
         cmd = [sys.executable, "-m", "bindep", "-b", *sorted(profiles)]
-        # # determine profiles
-        # result = subprocess.run(
-        #     [sys.executable, "-m", "bindep", "--profiles"],
-        #     check=False,
-        #     universal_newlines=True,
-        #     stdout=subprocess.PIPE,
-        # )
-        # if result.returncode:
-        #     print("Bindep failed to list profiles: %s", result.stdout)
-        #     sys.exit(result.returncode)
-        # lines = result.stdout.splitlines()
-        # try:
-        #     profiles = lines[lines.index("Configuration profiles:") + 1 :]
-        #     if "test" in profiles:
-        #         cmd.append("test")
-        # except ValueError:
-        #     pass
 
         result = subprocess.run(
             cmd,
             check=False,
-            universal_newlines=True,
+            text=True,
             stderr=subprocess.PIPE,
             stdout=subprocess.PIPE,
             cwd=path,
@@ -53,7 +34,7 @@ def check_bindep(path: Path, profiles: Optional[Iterable[str]] = None) -> None:
         if result.returncode:
             print(
                 f"Running '{' '.join(cmd)}' returned {result.returncode}, "
-                "likely missing system dependencies."
+                "likely missing system dependencies.",
             )
             if result.stdout:
                 print(result.stdout)

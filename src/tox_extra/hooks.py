@@ -5,17 +5,21 @@ from __future__ import annotations
 import os
 import pathlib
 import sys
-from argparse import ArgumentParser
-from typing import Any, List
+from typing import TYPE_CHECKING, Any
 
 import git
-from tox.execute import Outcome
 from tox.plugin import impl
-from tox.tox_env.api import ToxEnv
 from tox.tox_env.errors import Fail
 from tox.tox_env.python.api import Python
 
 from tox_extra.bindep import check_bindep
+
+if TYPE_CHECKING:
+    from argparse import ArgumentParser
+
+    from tox.execute import Outcome
+    from tox.tox_env.api import ToxEnv
+
 
 MSG_GIT_DIRTY = (
     "exit code 1 due to 'git status -s' reporting dirty. "
@@ -57,7 +61,12 @@ def tox_add_option(parser: ArgumentParser) -> None:
 
 @impl
 # pylint: disable=unused-argument
-def tox_on_install(tox_env: ToxEnv, arguments: Any, section: str, of_type: str) -> None:
+def tox_on_install(
+    tox_env: ToxEnv,
+    arguments: Any,
+    section: str,
+    of_type: str,
+) -> None:
     """Runs just before installing package."""
     if os.environ.get("TOX_EXTRA_BINDEP", "1") != "0":
         profiles = {
@@ -68,8 +77,8 @@ def tox_on_install(tox_env: ToxEnv, arguments: Any, section: str, of_type: str) 
         if isinstance(tox_env, Python):
             profiles.add(f"python{tox_env.py_dot_ver()}")  # python3.12 like profile
             profiles.add(
-                f"py{tox_env.py_dot_ver().replace('.', '')}"
-            )  # py312 like profile # type: ignore
+                f"py{tox_env.py_dot_ver().replace('.', '')}",
+            )  # py312 like profile
 
         check_bindep(path=pathlib.Path.cwd(), profiles=frozenset(profiles))
 
@@ -77,7 +86,9 @@ def tox_on_install(tox_env: ToxEnv, arguments: Any, section: str, of_type: str) 
 @impl
 # pylint: disable=unused-argument
 def tox_after_run_commands(
-    tox_env: ToxEnv, exit_code: int, outcomes: List[Outcome]
+    tox_env: ToxEnv,
+    exit_code: int,
+    outcomes: list[Outcome],
 ) -> None:
     """Hook that runs after test commands."""
     allow_dirty = getattr(tox_env.options, "allow_dirty", False)
