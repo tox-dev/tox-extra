@@ -1,24 +1,14 @@
 [build-system]
-requires = [
-  "setuptools >= 61.0",
-  "setuptools_scm[toml] >= 7.0.0"
-]
 build-backend = "setuptools.build_meta"
+requires = [
+  "setuptools >= 65.3.0", # required by pyproject+setuptools_scm integration and editable installs
+  "setuptools_scm[toml] >= 7.0.5" # required for "no-local-version" scheme
+]
 
 [project]
-# https://peps.python.org/pep-0621/#readme
-requires-python = ">=3.9"
-dynamic = ["version"]
-name = "tox-extra"
-description = "Performs extra checks before or after running"
-readme = "README.md"
 authors = [
-  {"name" = "Sorin Sbarnea", "email" = "sorin.sbarnea@gmail.com"}
+  {"email" = "sorin.sbarnea@gmail.com", "name" = "Sorin Sbarnea"}
 ]
-maintainers = [
-  {"name" = "Sorin Sbarnea", "email" = "sorin.sbarnea@gmail.com"}
-]
-license = {text = "MIT"}
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
@@ -33,13 +23,23 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Topic :: Software Development :: Testing"
 ]
-keywords = ["git", "tox", "tox-plugin"]
 dependencies = [
   "bindep>2.8.1",
   "gitpython",
   "packaging",
   "tox"
 ]
+description = "Performs extra checks before or after running"
+dynamic = ["version"]
+keywords = ["git", "tox", "tox-plugin"]
+license = {text = "MIT"}
+maintainers = [
+  {"email" = "sorin.sbarnea@gmail.com", "name" = "Sorin Sbarnea"}
+]
+name = "tox-extra"
+readme = "README.md"
+# https://peps.python.org/pep-0621/#readme
+requires-python = ">=3.9"
 
 [project.entry-points.tox]
 extra = "tox_extra.hooks"
@@ -53,37 +53,107 @@ test = [
 ]
 
 [project.urls]
+changelog = "https://github.com/tox-dev/tox-extra/releases"
 homepage = "https://github.com/tox-dev/tox-extra"
 issues = "https://github.com/tox-dev/tox-extra/issues"
 repository = "https://github.com/tox-dev/tox-extra"
-changelog = "https://github.com/tox-dev/tox-extra/releases"
 
 [tool.coverage.paths]
 source = ["src"]
 
 [tool.coverage.report]
-omit = [".tox/*/lib/python*/site-packages/*"]
+fail_under = 92.0
 include = ["src/*"]
-fail_under = 100.0
-skip_covered = true
+omit = [".tox/*/lib/python*/site-packages/*", "src/*/_version.py"]
 show_missing = true
+skip_covered = true
+skip_empty = true
 
 [tool.coverage.run]
+concurrency = ["multiprocessing", "thread"]
+# Do not use branch until bug is fixes:
+# https://github.com/nedbat/coveragepy/issues/605
+# branch = true
 parallel = true
-
-[tool.isort]
-profile = "black"
+source = ["src"]
 
 [tool.mypy]
-python_version = 3.9
 color_output = true
-error_summary = true
+disallow_any_generics = true
 disallow_untyped_calls = true
 disallow_untyped_defs = true
-disallow_any_generics = true
+error_summary = true
+python_version = 3.9
 
 [tool.pytest.ini_options]
+# do not add options here as this will likely break either console runs or IDE
+# integration like vscode or pycharm
 addopts = "-ra --showlocals"
 
+[tool.ruff]
+cache-dir = "./.cache/.ruff"
+fix = true
+# Same as Black.
+line-length = 88
+
+[tool.ruff.lint]
+ignore = [
+  "COM812", # conflicts with ISC001 on format
+  "D203", # incompatible with D211
+  "D213", # incompatible with D212
+  "E501", # we use black
+  "ERA001", # auto-removal of commented out code affects development and vscode integration
+  "INP001", # "is part of an implicit namespace package", all false positives
+  "ISC001", # conflicts with COM812 on format
+  "PLW2901", # PLW2901: Redefined loop variable
+  "RET504", # Unnecessary variable assignment before `return` statement
+  # temporary disabled until we fix them:
+  "ANN",
+  "ARG001",
+  "PTH109",
+  "PTH112",
+  "PTH113",
+  "PTH123",
+  "S603",
+  "S605",
+  "S607",
+  "SIM117",
+  "T201",
+  "UP022"
+]
+select = ["ALL"]
+
+[tool.ruff.lint.flake8-builtins]
+builtins-ignorelist = ["id"]
+
+[tool.ruff.lint.flake8-pytest-style]
+parametrize-values-type = "tuple"
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
 [tool.setuptools_scm]
+# To prevent accidental pick of mobile version tags such 'v6'
+git_describe_command = [
+  "git",
+  "describe",
+  "--dirty",
+  "--long",
+  "--tags",
+  "--match",
+  "v*.*"
+]
 local_scheme = "no-local-version"
+tag_regex = "^(?P<prefix>v)?(?P<version>[0-9.]+)(?P<suffix>.*)?$"
+write_to = "src/tox_extra/_version.py"
+
+[tool.tomlsort]
+in_place = true
+sort_inline_tables = true
+sort_table_keys = true

@@ -1,39 +1,20 @@
-default_language_version:
-  # pylint is not yet compatible with py311
-  python: python3.10
 repos:
-  - repo: https://github.com/pappasam/toml-sort
-    rev: v0.23.1
-    hooks:
-      - id: toml-sort-fix
   - repo: https://github.com/pre-commit/mirrors-prettier
     # keep it before markdownlint and eslint
     rev: "v4.0.0-alpha.8"
     hooks:
       - id: prettier
-  - repo: https://github.com/PyCQA/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
-  - repo: https://github.com/psf/black
-    rev: 24.10.0
-    hooks:
-      - id: black
-        language_version: python3
   - repo: https://github.com/pre-commit/pre-commit-hooks.git
     rev: v5.0.0
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
       - id: mixed-line-ending
-      - id: check-byte-order-marker
+      - id: fix-byte-order-marker
       - id: check-executables-have-shebangs
       - id: check-merge-conflict
       - id: debug-statements
-  - repo: https://github.com/PyCQA/flake8
-    rev: 7.1.1
-    hooks:
-      - id: flake8
+
   - repo: https://github.com/adrienverge/yamllint.git
     rev: v1.35.1
     hooks:
@@ -41,6 +22,24 @@ repos:
         files: \.(yaml|yml)$
         types: [file, yaml]
         entry: yamllint --strict
+  - repo: https://github.com/pappasam/toml-sort
+    rev: v0.23.1
+    hooks:
+      - id: toml-sort-fix
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.7.3
+    hooks:
+      - id: ruff
+        args:
+          - --fix
+          - --exit-non-zero-on-fix
+        types_or: [python, pyi]
+      - id: ruff-format # must be after ruff
+        types_or: [python, pyi]
+  - repo: https://github.com/psf/black # must be after ruff
+    rev: 24.10.0
+    hooks:
+      - id: black
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.13.0
     hooks:
@@ -54,8 +53,8 @@ repos:
           - packaging
           - py>=1.9.0
           - tox>=4.23.2
-  - repo: https://github.com/pre-commit/mirrors-pylint
-    rev: v3.0.0a5
+  - repo: https://github.com/pycqa/pylint
+    rev: v3.3.1
     hooks:
       - id: pylint
         additional_dependencies:
