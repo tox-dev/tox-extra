@@ -1,8 +1,8 @@
 """Hosts tests for the plugin."""
 
 import os
+import sys
 from pathlib import Path
-from runpy import run_module
 from subprocess import PIPE, check_output, run
 
 import pytest
@@ -12,11 +12,13 @@ from . import preserve_cwd
 TOX_SAMPLE = """
 [tox]
 skipsdist = true
+requires =
+    tox-uv >= 1.16.0
 """
 
 
 @preserve_cwd
-def test_fail_if_dirty(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_fail_if_dirty(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Validated that it fails when drity."""
     # We need to mock sys.argv because run_module will look at it and fail
     # as the argv received of pytest would leak into our tox module call.
@@ -30,10 +32,8 @@ def test_fail_if_dirty(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
         file.write(TOX_SAMPLE)
 
     # check running tox w/o git repo is passing
-    with pytest.raises(SystemExit) as exc:
-        run_module("tox", run_name="__main__")  # , alter_sys=True)
-    assert exc.type == SystemExit
-    assert exc.value.code == 0
+    result = run("tox", shell=True, universal_newlines=True, check=False)
+    assert result.returncode == 0
 
     # create temp git repository
     run("git init --initial-branch=main", shell=True, check=True)
@@ -63,29 +63,40 @@ def test_fail_if_dirty(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
 
     # check plugin is installed
     result = run(
-        "python -m tox --version",
-        shell=True,
+        [sys.executable, "-m", "tox", "--version", "-vv"],
+        shell=False,
         universal_newlines=True,
+        check=True,
         stdout=PIPE,
-        check=False,
+        stderr=PIPE,
+        cwd=tmp_path,
+        env=os.environ,
     )
     assert result.returncode == 0
-    assert "tox-extra" in result.stdout
+    assert "tox-extra" in result.stdout, result
 
     # check tox is failing while dirty
     # We use runpy to call tox in order to assure that coverage happens, as
     # running a subprocess would prevent it from working.
-    with pytest.raises(SystemExit) as exc:
-        run_module("tox", run_name="__main__", alter_sys=True)
-    assert exc.type == SystemExit
-    assert exc.value.code == 1
+    result = run(
+        [sys.executable, "-m", "tox"],
+        shell=False,
+        universal_newlines=True,
+        stdout=PIPE,
+        check=False,
+    )
+    assert result.returncode == 1
 
     # add untracked files
     run("git add .", shell=True, check=True)
     run("git commit -m 'Add untracked files'", shell=True, check=True)
 
     # check that tox is now passing
-    with pytest.raises(SystemExit) as exc:
-        run_module("tox", run_name="__main__", alter_sys=True)
-    assert exc.type == SystemExit
-    assert exc.value.code == 0
+    result = run(
+        "tox",
+        shell=True,
+        universal_newlines=True,
+        stdout=PIPE,
+        check=False,
+    )
+    assert result.returncode == 0

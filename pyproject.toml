@@ -38,7 +38,8 @@ dependencies = [
   "bindep>2.8.1",
   "gitpython",
   "packaging",
-  "tox"
+  "tox",
+  "tox-uv>=1.16.0"
 ]
 
 [project.entry-points.tox]
@@ -73,6 +74,9 @@ parallel = true
 
 [tool.isort]
 profile = "black"
+
+[tool.pytest.ini_options]
+addopts = "-ra --showlocals"
 
 [tool.setuptools_scm]
 local_scheme = "no-local-version"
