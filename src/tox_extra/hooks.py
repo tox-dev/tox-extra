@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import pathlib
 import shutil
@@ -22,10 +23,14 @@ if TYPE_CHECKING:
     from tox.tox_env.api import ToxEnv
 
 
-MSG_GIT_DIRTY = (
-    "exit code 1 due to 'git status -s' reporting dirty. "
-    "That should not happen regardless if status is passed, failed or aborted. "
-    "Modify .gitignore file to avoid this."
+logger = logging.getLogger(__name__)
+WARNING_MSG_GIT_DIRTY = (
+    "'git status -s' reported dirty. "
+    "Modify .gitignore file as this will cause an error under CI/CD pipelines."
+)
+
+ERROR_MSG_GIT_DIRTY = (
+    "::error title=tox-extra detected git dirty status:: " + WARNING_MSG_GIT_DIRTY
 )
 
 
@@ -37,7 +42,9 @@ def is_git_dirty(path: str) -> bool:
         try:
             repo = git.Repo(pathlib.Path.cwd())
             if repo.is_dirty(untracked_files=True):
-                os.system(f"{git_path} status -s")  # noqa: S605
+                # stderr is hidden to avoid noise like occasional:
+                # warning: untracked cache is disabled on this system or location
+                os.system(f"{git_path} status -s 2>/dev/null")  # noqa: S605
                 # We want to display long diff only on non-interactive shells,
                 # like CI/CD pipelines because on local shell, the user can
                 # decide to run it himself if the status line was not enogh.
@@ -95,4 +102,6 @@ def tox_after_run_commands(
     """Hook that runs after test commands."""
     allow_dirty = getattr(tox_env.options, "allow_dirty", False)
     if not allow_dirty and is_git_dirty("."):
-        raise Fail(MSG_GIT_DIRTY)
+        if os.environ.get("CI") == "true":
+            raise Fail(ERROR_MSG_GIT_DIRTY)
+        logger.error(WARNING_MSG_GIT_DIRTY)
