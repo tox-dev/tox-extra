@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import pathlib
+import shutil
 import sys
 from typing import TYPE_CHECKING, Any
 
@@ -30,17 +31,18 @@ MSG_GIT_DIRTY = (
 
 def is_git_dirty(path: str) -> bool:
     """Reports if the git repository at the given path is dirty."""
-    if os.path.isdir(f"{path}/.git"):
+    git_path = shutil.which("git")
+    if pathlib.Path(f"{path}/.git").is_dir():
         _environ = dict(os.environ)
         try:
-            repo = git.Repo(os.getcwd())
+            repo = git.Repo(pathlib.Path.cwd())
             if repo.is_dirty(untracked_files=True):
-                os.system("git status -s")
+                os.system(f"{git_path} status -s")  # noqa: S605
                 # We want to display long diff only on non-interactive shells,
                 # like CI/CD pipelines because on local shell, the user can
                 # decide to run it himself if the status line was not enogh.
                 if not os.isatty(sys.stdout.fileno()):
-                    os.system("git --no-pager diff -U0 --minimal")
+                    os.system(f"{git_path} --no-pager diff -U0 --minimal")  # noqa: S605
                 return True
         finally:
             os.environ.clear()
@@ -63,9 +65,9 @@ def tox_add_option(parser: ArgumentParser) -> None:
 # pylint: disable=unused-argument
 def tox_on_install(
     tox_env: ToxEnv,
-    arguments: Any,
-    section: str,
-    of_type: str,
+    arguments: Any,  # noqa: ARG001,ANN401
+    section: str,  # noqa: ARG001
+    of_type: str,  # noqa: ARG001
 ) -> None:
     """Runs just before installing package."""
     if os.environ.get("TOX_EXTRA_BINDEP", "1") != "0":
@@ -87,8 +89,8 @@ def tox_on_install(
 # pylint: disable=unused-argument
 def tox_after_run_commands(
     tox_env: ToxEnv,
-    exit_code: int,
-    outcomes: list[Outcome],
+    exit_code: int,  # noqa: ARG001
+    outcomes: list[Outcome],  # noqa: ARG001
 ) -> None:
     """Hook that runs after test commands."""
     allow_dirty = getattr(tox_env.options, "allow_dirty", False)

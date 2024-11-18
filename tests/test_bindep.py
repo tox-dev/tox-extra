@@ -21,8 +21,7 @@ from . import preserve_cwd
 def test_bindep(folder: str, expected_rc: int) -> None:
     """Tests that running tox with a bindep file that is missing deps fails."""
     os.chdir(folder)
-    with patch("sys.argv", ["tox"]):
-        with pytest.raises(SystemExit) as exc:
-            run_module("tox", run_name="__main__")
+    with patch("sys.argv", ["tox"]), pytest.raises(SystemExit) as exc:
+        run_module("tox", run_name="__main__")
     assert exc.type is SystemExit
     assert exc.value.code == expected_rc

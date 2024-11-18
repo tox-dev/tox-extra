@@ -107,19 +107,7 @@ ignore = [
   "INP001", # "is part of an implicit namespace package", all false positives
   "ISC001", # conflicts with COM812 on format
   "PLW2901", # PLW2901: Redefined loop variable
-  "RET504", # Unnecessary variable assignment before `return` statement
-  # temporary disabled until we fix them:
-  "ANN",
-  "ARG001",
-  "PTH109",
-  "PTH112",
-  "PTH113",
-  "PTH123",
-  "S603",
-  "S605",
-  "S607",
-  "SIM117",
-  "UP022"
+  "RET504" # Unnecessary variable assignment before `return` statement
 ]
 select = ["ALL"]
 
