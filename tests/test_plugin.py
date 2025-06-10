@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 from runpy import run_module
 from subprocess import PIPE, check_output, run
+from unittest.mock import patch
 
 import pytest
 
@@ -16,7 +17,7 @@ skipsdist = true
 
 
 @preserve_cwd
-def test_fail_if_dirty(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_fail_if_dirty(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Validated that it fails when drity."""
     # We need to mock sys.argv because run_module will look at it and fail
     # as the argv received of pytest would leak into our tox module call.
@@ -26,7 +27,7 @@ def test_fail_if_dirty(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
     os.chdir(path)
 
     # add tox.ini and .gitignore files (untracked)
-    with open(Path(tmp_path) / "tox.ini", "w", encoding="utf-8") as file:
+    with (Path(tmp_path) / "tox.ini").open("w", encoding="utf-8") as file:
         file.write(TOX_SAMPLE)
 
     # check running tox w/o git repo is passing
@@ -47,7 +48,7 @@ def test_fail_if_dirty(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
     output = check_output("git status --porcelain", shell=True, universal_newlines=True)
     assert output == ""
 
-    with open(Path(tmp_path) / ".gitignore", "w", encoding="utf-8") as file:
+    with (Path(tmp_path) / ".gitignore").open("w", encoding="utf-8") as file:
         file.write(".tox\n")
 
     result = run(
@@ -75,7 +76,7 @@ def test_fail_if_dirty(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
     # check tox is failing while dirty
     # We use runpy to call tox in order to assure that coverage happens, as
     # running a subprocess would prevent it from working.
-    with pytest.raises(SystemExit) as exc:
+    with patch.dict("os.environ", {"CI": "true"}), pytest.raises(SystemExit) as exc:
         run_module("tox", run_name="__main__", alter_sys=True)
     assert exc.type is SystemExit
     assert exc.value.code == 1
@@ -85,7 +86,7 @@ def test_fail_if_dirty(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
     run("git commit -m 'Add untracked files'", shell=True, check=True)
 
     # check that tox is now passing
-    with pytest.raises(SystemExit) as exc:
+    with patch.dict("os.environ", {"CI": "true"}), pytest.raises(SystemExit) as exc:
         run_module("tox", run_name="__main__", alter_sys=True)
     assert exc.type is SystemExit
     assert exc.value.code == 0

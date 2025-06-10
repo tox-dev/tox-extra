@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import pathlib
+import shutil
 import sys
 from typing import TYPE_CHECKING, Any
 
@@ -21,26 +23,33 @@ if TYPE_CHECKING:
     from tox.tox_env.api import ToxEnv
 
 
-MSG_GIT_DIRTY = (
-    "exit code 1 due to 'git status -s' reporting dirty. "
-    "That should not happen regardless if status is passed, failed or aborted. "
-    "Modify .gitignore file to avoid this."
+logger = logging.getLogger(__name__)
+WARNING_MSG_GIT_DIRTY = (
+    "'git status -s' reported dirty. "
+    "Modify .gitignore file as this will cause an error under CI/CD pipelines."
+)
+
+ERROR_MSG_GIT_DIRTY = (
+    "::error title=tox-extra detected git dirty status:: " + WARNING_MSG_GIT_DIRTY
 )
 
 
 def is_git_dirty(path: str) -> bool:
     """Reports if the git repository at the given path is dirty."""
-    if os.path.isdir(f"{path}/.git"):
+    git_path = shutil.which("git")
+    if pathlib.Path(f"{path}/.git").is_dir():
         _environ = dict(os.environ)
         try:
-            repo = git.Repo(os.getcwd())
+            repo = git.Repo(pathlib.Path.cwd())
             if repo.is_dirty(untracked_files=True):
-                os.system("git status -s")
+                # stderr is hidden to avoid noise like occasional:
+                # warning: untracked cache is disabled on this system or location
+                os.system(f"{git_path} status -s 2>/dev/null")  # noqa: S605
                 # We want to display long diff only on non-interactive shells,
                 # like CI/CD pipelines because on local shell, the user can
                 # decide to run it himself if the status line was not enogh.
                 if not os.isatty(sys.stdout.fileno()):
-                    os.system("git --no-pager diff -U0 --minimal")
+                    os.system(f"{git_path} --no-pager diff -U0 --minimal")  # noqa: S605
                 return True
         finally:
             os.environ.clear()
@@ -63,9 +72,9 @@ def tox_add_option(parser: ArgumentParser) -> None:
 # pylint: disable=unused-argument
 def tox_on_install(
     tox_env: ToxEnv,
-    arguments: Any,
-    section: str,
-    of_type: str,
+    arguments: Any,  # noqa: ARG001,ANN401
+    section: str,  # noqa: ARG001
+    of_type: str,  # noqa: ARG001
 ) -> None:
     """Runs just before installing package."""
     if os.environ.get("TOX_EXTRA_BINDEP", "1") != "0":
@@ -87,10 +96,12 @@ def tox_on_install(
 # pylint: disable=unused-argument
 def tox_after_run_commands(
     tox_env: ToxEnv,
-    exit_code: int,
-    outcomes: list[Outcome],
+    exit_code: int,  # noqa: ARG001
+    outcomes: list[Outcome],  # noqa: ARG001
 ) -> None:
     """Hook that runs after test commands."""
     allow_dirty = getattr(tox_env.options, "allow_dirty", False)
     if not allow_dirty and is_git_dirty("."):
-        raise Fail(MSG_GIT_DIRTY)
+        if os.environ.get("CI") == "true":
+            raise Fail(ERROR_MSG_GIT_DIRTY)
+        logger.error(WARNING_MSG_GIT_DIRTY)

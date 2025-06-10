@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import os
 import subprocess
 import sys
 from functools import cache
@@ -21,17 +20,16 @@ def check_bindep(path: Path, profiles: Iterable[str] | None = None) -> None:
     """Check bindeps requirements or exit."""
     if profiles is None:  # pragma: no cover
         profiles = []
-    if os.path.isfile(path / "bindep.txt"):
+    if (path / "bindep.txt").is_file():
         # as 'bindep --profiles' does not show user defined profiles like 'test'
         # it makes no sense to list them.
         cmd = [sys.executable, "-m", "bindep", "-b", *sorted(profiles)]
 
-        result = subprocess.run(
+        result = subprocess.run(  # noqa: S603
             cmd,
             check=False,
             text=True,
-            stderr=subprocess.PIPE,
-            stdout=subprocess.PIPE,
+            capture_output=True,
             cwd=path,
         )
         if result.returncode:
