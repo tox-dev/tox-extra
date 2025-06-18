@@ -164,7 +164,7 @@ commands = [
     "{posargs:--all}"
   ]
 ]
-deps = ["pre_commit"]
+deps = ["pre-commit", "pre-commit-uv"]
 description = "Run linting"
 skip_install = true
 
