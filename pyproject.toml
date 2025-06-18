@@ -13,7 +13,6 @@ classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
   "Framework :: tox",
-  "License :: OSI Approved :: MIT License",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.9",
@@ -33,7 +32,7 @@ dependencies = [
 description = "Performs extra checks before or after running"
 dynamic = ["version"]
 keywords = ["git", "tox", "tox-plugin"]
-license = {text = "MIT"}
+license = "MIT"
 maintainers = [
   {"email" = "sorin.sbarnea@gmail.com", "name" = "Sorin Sbarnea"}
 ]
@@ -166,6 +165,7 @@ commands = [
 ]
 deps = ["pre-commit", "pre-commit-uv"]
 description = "Run linting"
+set_env = {PYTHONWARNINGS = ""}
 skip_install = true
 
 [tool.tox.env.pkg]
@@ -183,6 +183,7 @@ deps = [
   "pip"
 ]
 description = "Test packaging"
+set_env = {PYTHONWARNINGS = "error"}
 # don't install package in this env
 skip_install = true
 # `usedevelop = true` overrides `skip_install` instruction, it's unwanted
@@ -206,6 +207,6 @@ extras = ["test"]
 package = "editable"
 pass_env = ["SSH_AUTH_SOCK"]
 requires = ["tox-uv"]
-set_env = {COVERAGE_FILE = "{env:COVERAGE_FILE:{toxworkdir}/.coverage.{envname}}", COVERAGE_PROCESS_START = "{toxinidir}/pyproject.toml", GIT_AUTHOR_EMAIL = "noreply@example.com", GIT_AUTHOR_NAME = "John Doe", GIT_COMMITTER_EMAIL = "noreply@example.com", GIT_COMMITTER_NAME = "John Doe", PIP_DISABLE_PIP_VERSION_CHECK = "1"}
+set_env = {COVERAGE_FILE = "{env:COVERAGE_FILE:{toxworkdir}/.coverage.{envname}}", COVERAGE_PROCESS_START = "{toxinidir}/pyproject.toml", GIT_AUTHOR_EMAIL = "noreply@example.com", GIT_AUTHOR_NAME = "John Doe", GIT_COMMITTER_EMAIL = "noreply@example.com", GIT_COMMITTER_NAME = "John Doe", PIP_DISABLE_PIP_VERSION_CHECK = "1", PYTHONWARNINGS = "error"}
 skip_install = false
 usedevelop = true
