@@ -81,6 +81,11 @@ def test_fail_if_dirty(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     assert exc.type is SystemExit
     assert exc.value.code == 1
 
+    with patch.dict("os.environ", {"CI": "false"}), pytest.raises(SystemExit) as exc:
+        run_module("tox", run_name="__main__", alter_sys=True)
+    assert exc.type is SystemExit
+    assert exc.value.code == 0
+
     # add untracked files
     run("git add .", shell=True, check=True)
     run("git commit -m 'Add untracked files'", shell=True, check=True)

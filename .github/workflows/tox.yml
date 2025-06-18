@@ -23,6 +23,7 @@ concurrency:
 env:
   FORCE_COLOR: 1 # tox, pytest
   PY_COLORS: 1
+  TOX_STDERR_COLOR: LIGHTBLACK_EX # use dimmed color instead of red https://github.com/tox-dev/tox/pull/3426
 
 jobs:
   prepare:

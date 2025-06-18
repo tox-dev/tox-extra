@@ -104,4 +104,4 @@ def tox_after_run_commands(
     if not allow_dirty and is_git_dirty("."):
         if os.environ.get("CI") == "true":
             raise Fail(ERROR_MSG_GIT_DIRTY)
-        logger.error(WARNING_MSG_GIT_DIRTY)
+        logger.warning(WARNING_MSG_GIT_DIRTY)
