@@ -33,6 +33,10 @@ ERROR_MSG_GIT_DIRTY = (
     "::error title=tox-extra detected git dirty status:: " + WARNING_MSG_GIT_DIRTY
 )
 
+# Change the color of stderr from default red to a dimmed grey
+if "TOX_STDERR_COLOR" not in os.environ:
+    os.environ["TOX_STDERR_COLOR"] = "LIGHTBLACK_EX"
+
 
 def is_git_dirty(path: str) -> bool:
     """Reports if the git repository at the given path is dirty."""
