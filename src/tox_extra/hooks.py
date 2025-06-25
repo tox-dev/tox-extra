@@ -7,7 +7,7 @@ import os
 import pathlib
 import shutil
 import sys
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TextIO
 
 import git
 from tox.plugin import impl
@@ -33,9 +33,54 @@ ERROR_MSG_GIT_DIRTY = (
     "::error title=tox-extra detected git dirty status:: " + WARNING_MSG_GIT_DIRTY
 )
 
-# Change the color of stderr from default red to a dimmed grey
-if "TOX_STDERR_COLOR" not in os.environ:
-    os.environ["TOX_STDERR_COLOR"] = "LIGHTBLACK_EX"
+
+# Based on Ansible implementation
+def to_bool(value: str | bool | None) -> bool:  # pragma: no cover  # noqa: FBT001
+    """Return a bool for the arg."""
+    if value is None or isinstance(value, bool):
+        return bool(value)
+    if isinstance(value, str):
+        value = value.lower()
+    return value in ("yes", "on", "1", "true", 1)
+
+
+def should_do_markup(stream: TextIO = sys.stdout) -> bool:  # pragma: no cover
+    """Decide about use of ANSI colors."""
+    py_colors = None
+
+    # https://xkcd.com/927/
+    for env_var in [
+        "PY_COLORS",
+        "CLICOLOR",
+        "FORCE_COLOR",
+        "TOX_COLORED",
+        "GITHUB_ACTIONS",  # they support ANSI
+    ]:
+        value = os.environ.get(env_var, None)
+        if value is not None:
+            py_colors = to_bool(value)
+            break
+
+    # If deliberately disabled colors
+    if os.environ.get("NO_COLOR", None):
+        return False
+
+    # User configuration requested colors
+    if py_colors is not None:
+        return to_bool(py_colors)
+
+    term = os.environ.get("TERM", "")
+    if "xterm" in term:
+        return True
+
+    if term == "dumb":
+        return False
+
+    # Use tty detection logic as last resort because there are numerous
+    # factors that can make isatty return a misleading value, including:
+    # - stdin.isatty() is the only one returning true, even on a real terminal
+    # - stderr returning false if user uses a error stream coloring solution
+    return stream.isatty()
 
 
 def is_git_dirty(path: str) -> bool:
@@ -109,3 +154,21 @@ def tox_after_run_commands(
         if os.environ.get("CI") == "true":
             raise Fail(ERROR_MSG_GIT_DIRTY)
         logger.warning(WARNING_MSG_GIT_DIRTY)
+
+
+if should_do_markup():
+    # Workaround for tools that do not naturally detect colors in CI system
+    # like Github Actions. Still, when already defined we will not add them.
+    overrides = {
+        "ANSIBLE_FORCE_COLOR": "1",
+        "COLOR": "yes",
+        "FORCE_COLOR": "1",
+        "MYPY_FORCE_COLOR": "1",
+        "PRE_COMMIT_COLOR": "always",
+        "PY_COLORS": "1",
+        "TOX_COLORED": "yes",
+        "TOX_STDERR_COLOR": "LIGHTBLACK_EX",  # stderr in grey instead of red
+    }
+    for k, v in overrides.items():
+        if k not in os.environ:
+            os.environ[k] = v

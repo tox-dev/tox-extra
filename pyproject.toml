@@ -62,6 +62,7 @@ repository = "https://github.com/tox-dev/tox-extra"
 source = ["src"]
 
 [tool.coverage.report]
+exclude_also = ["pragma: no cover", "if TYPE_CHECKING:"]
 fail_under = 92.0
 include = ["src/*"]
 omit = [".tox/*/lib/python*/site-packages/*", "src/*/_version.py"]
@@ -205,7 +206,7 @@ commands = [
 description = "Run tests"
 extras = ["test"]
 package = "editable"
-pass_env = ["SSH_AUTH_SOCK"]
+pass_env = ["ANSIBLE_FORCE_COLOR", "CI", "FORCE_COLOR", "GITHUB_*", "MYPY_*", "PRE_COMMIT*", "PY_COLORS", "SSH_AUTH_SOCK", "TERM"]
 requires = ["tox-uv"]
 set_env = {COVERAGE_FILE = "{env:COVERAGE_FILE:{toxworkdir}/.coverage.{envname}}", COVERAGE_PROCESS_START = "{toxinidir}/pyproject.toml", GIT_AUTHOR_EMAIL = "noreply@example.com", GIT_AUTHOR_NAME = "John Doe", GIT_COMMITTER_EMAIL = "noreply@example.com", GIT_COMMITTER_NAME = "John Doe", PIP_DISABLE_PIP_VERSION_CHECK = "1", PYTHONWARNINGS = "error"}
 skip_install = false

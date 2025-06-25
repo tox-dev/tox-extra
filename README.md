@@ -56,3 +56,14 @@ system dependencies specific to a single tox environment if they wish.
 
 To disable bindep feature, you can define `TOX_EXTRA_BINDEP=0` in your
 environment.
+
+## Improves colored output on CI
+
+Multiple tools, including tox and pre-commit fail to property use coloring
+when run in a CI evironment like Github Actions. This plugin will inject
+additional environment variables in order to ensure that the tool output
+remains colored.
+
+It should be noted that this happens only if these variables are not already
+defined by the user. This feature should reduce the need of adding extra
+environment variables to your pipelines.
