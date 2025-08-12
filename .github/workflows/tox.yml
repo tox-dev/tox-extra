@@ -70,7 +70,7 @@ jobs:
       # proof that we failed to catch a bug by not running it. Using
       # distribution should be preferred instead of custom builds.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0 # needed by setuptools-scm
           submodules: true
@@ -142,7 +142,7 @@ jobs:
 
     steps:
       # checkout needed for codecov action which needs codecov.yml file
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Python # likely needed for coverage
         uses: actions/setup-python@v5
@@ -219,7 +219,7 @@ jobs:
         run: python3 -m pip install --user "tox>=4.0.0"
 
       - name: Check out src from Git
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0 # needed by setuptools-scm
           submodules: true
