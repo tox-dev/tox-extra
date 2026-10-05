@@ -1,3 +1,5 @@
+# Copyright (c) 2021 tox development team
+
 """Unit tests."""
 
 import os
@@ -15,7 +17,7 @@ from . import preserve_cwd
     (
         pytest.param("tests/fixtures/bindep_0", 1, id="0"),
         pytest.param("tests/fixtures/bindep_1", 0, id="1"),
-        pytest.param("tests/fixtures/bindep_2", 1, id="2"),
+        pytest.param("tests/fixtures/bindep_2", 2, id="2"),
     ),
 )
 def test_bindep(folder: str, expected_rc: int) -> None:
