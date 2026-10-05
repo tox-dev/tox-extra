@@ -1,3 +1,5 @@
+# Copyright (c) 2021 tox development team
+
 """Bindep check feature implementations."""
 
 from __future__ import annotations

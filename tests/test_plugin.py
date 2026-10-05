@@ -1,6 +1,9 @@
+# Copyright (c) 2021 tox development team
+
 """Hosts tests for the plugin."""
 
 import os
+import sys
 from pathlib import Path
 from runpy import run_module
 from subprocess import PIPE, check_output, run
@@ -64,8 +67,7 @@ def test_fail_if_dirty(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
 
     # check plugin is installed
     result = run(
-        "python -m tox --version",
-        shell=True,
+        [sys.executable, "-m", "tox", "--version"],
         text=True,
         stdout=PIPE,
         check=False,

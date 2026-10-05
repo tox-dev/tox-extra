@@ -1,3 +1,5 @@
+# Copyright (c) 2021 tox development team
+
 """Tox hook implementations."""
 
 from __future__ import annotations
